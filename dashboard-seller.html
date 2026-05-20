@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Seller – GameTrade Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0d0f1a;--card:#151827;--border:#1e2540;--accent:#f0c040;--accent2:#3de0c8;--text:#e8eaf0;--muted:#7a82a0;--danger:#ff5c5c;--success:#3de88a;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+  a{text-decoration:none;color:inherit;}
+  nav{background:#0d0f1acc;backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:14px 5%;position:sticky;top:0;z-index:99;}
+  .logo{font-family:'Rajdhani',sans-serif;font-size:1.4rem;font-weight:700;color:var(--accent);}
+  .logo span{color:var(--accent2);}
+  .nav-right{display:flex;align-items:center;gap:10px;}
+  .role-badge{background:#332a0f;color:var(--accent);border-radius:6px;padding:4px 12px;font-size:.78rem;font-weight:700;}
+  .btn-logout{background:none;border:1px solid #ff5c5c44;color:#ff5c5c;padding:6px 14px;border-radius:6px;font-size:.78rem;font-weight:700;cursor:pointer;font-family:'Nunito',sans-serif;transition:.2s;}
+  .btn-logout:hover{background:#ff5c5c;color:#fff;}
+  .layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 57px);}
+  .sidebar{background:var(--card);border-right:1px solid var(--border);padding:24px 0;}
+  .sidebar-section{padding:0 18px;margin-bottom:6px;font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700;}
+  .sidebar-item{display:flex;align-items:center;gap:10px;padding:11px 22px;font-size:.87rem;font-weight:600;color:var(--muted);cursor:pointer;transition:.2s;border-left:3px solid transparent;}
+  .sidebar-item:hover{color:var(--text);background:#1a1e2e;}
+  .sidebar-item.active{color:var(--accent);border-left-color:var(--accent);background:#332a0f22;}
+  .sidebar-item .icon{font-size:1.1rem;width:22px;text-align:center;}
+  .main{padding:30px 32px;overflow-y:auto;}
+  .page{display:none;}
+  .page.active{display:block;}
+  .page-header{margin-bottom:28px;}
+  .page-header h1{font-family:'Rajdhani',sans-serif;font-size:1.8rem;font-weight:700;color:var(--accent);}
+  .page-header p{color:var(--muted);font-size:.88rem;margin-top:4px;}
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px;margin-bottom:28px;}
+  .stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;}
+  .stat-card .label{font-size:.77rem;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em;}
+  .stat-card .value{font-family:'Rajdhani',sans-serif;font-size:1.8rem;font-weight:700;color:var(--accent);}
+  .stat-card .sub{font-size:.75rem;color:var(--muted);margin-top:4px;}
+  .section-card{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:22px;}
+  .section-card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .section-card-header h3{font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;color:var(--accent2);}
+  table{width:100%;border-collapse:collapse;}
+  th{background:#0d0f1a;padding:12px 16px;text-align:left;font-size:.78rem;color:var(--accent);text-transform:uppercase;letter-spacing:.04em;}
+  td{padding:12px 16px;font-size:.86rem;border-top:1px solid var(--border);color:var(--muted);}
+  tr:hover td{background:#1a1e2e;color:var(--text);}
+  .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.73rem;font-weight:700;}
+  .badge-green{background:#1a3a2a;color:#3de88a;}
+  .badge-yellow{background:#332a0f;color:var(--accent);}
+  .badge-blue{background:#0f2040;color:#60b0ff;}
+  .badge-red{background:#3a1a1a;color:#ff5c5c;}
+  .form-group{margin-bottom:16px;}
+  .form-group label{display:block;font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em;}
+  .form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 14px;border-radius:9px;border:1.5px solid var(--border);background:#0d0f1a;color:var(--text);font-size:.88rem;font-family:'Nunito',sans-serif;transition:.2s;outline:none;}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent2);box-shadow:0 0 0 3px #3de0c822;}
+  .form-group textarea{resize:vertical;min-height:90px;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .btn-submit{background:var(--accent);color:#0d0f1a;border:none;border-radius:9px;padding:12px 28px;font-weight:700;font-size:.9rem;cursor:pointer;font-family:'Nunito',sans-serif;transition:.2s;}
+  .btn-submit:hover{background:var(--accent2);}
+  .kursus-card{background:linear-gradient(135deg,#1a2540,#0d1520);border:1px solid var(--accent2);border-radius:14px;padding:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:22px;}
+  .kursus-card h3{font-family:'Rajdhani',sans-serif;font-size:1.2rem;color:var(--accent2);}
+  .kursus-card p{font-size:.85rem;color:var(--muted);margin-top:4px;max-width:460px;line-height:1.6;}
+  .btn-kursus{background:var(--accent2);color:#0d0f1a;border:none;border-radius:9px;padding:10px 22px;font-weight:700;font-size:.85rem;cursor:pointer;font-family:'Nunito',sans-serif;transition:.2s;text-decoration:none;display:inline-block;}
+  .btn-kursus:hover{background:var(--accent);}
+  .empty{text-align:center;padding:40px 20px;color:var(--muted);}
+  .empty .icon{font-size:2.5rem;margin-bottom:10px;}
+  .empty p{font-size:.87rem;}
+  /* Marketplace listing card */
+  .listing-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;padding:20px;}
+  .listing-item{background:#0d0f1a;border:1px solid var(--border);border-radius:10px;padding:16px;}
+  .listing-item .game-tag{font-size:.72rem;font-weight:700;color:var(--accent2);background:#0f2040;border-radius:4px;padding:2px 8px;display:inline-block;margin-bottom:8px;}
+  .listing-item .price{font-family:'Rajdhani',sans-serif;font-size:1.3rem;color:var(--accent);font-weight:700;margin:6px 0;}
+  .listing-item .desc{font-size:.8rem;color:var(--muted);line-height:1.5;margin-bottom:8px;}
+  .listing-item .meta{font-size:.73rem;color:var(--muted);}
+  .listing-item .seller-name{font-size:.75rem;color:var(--accent2);margin-top:4px;font-weight:700;}
+  @media(max-width:700px){
+    .layout{grid-template-columns:1fr;}
+    .sidebar{display:flex;overflow-x:auto;padding:10px 0;border-right:none;border-bottom:1px solid var(--border);}
+    .sidebar-section{display:none;}
+    .sidebar-item{padding:10px 16px;border-left:none;border-bottom:3px solid transparent;white-space:nowrap;}
+    .sidebar-item.active{border-bottom-color:var(--accent);border-left:none;}
+    .main{padding:20px 16px;}
+    .form-row{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Game<span>Trade</span> <span style="color:var(--muted);font-size:1rem;">|</span> <span style="color:var(--text);font-size:1rem;">Dashboard Seller</span></div>
+  <div class="nav-right">
+    <span class="role-badge">🛒 Seller</span>
+    <span id="navName" style="font-size:.85rem;color:var(--muted);"></span>
+    <button class="btn-logout" onclick="logout()">Keluar</button>
+  </div>
+</nav>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-section">Menu</div>
+    <div class="sidebar-item active" onclick="showPage('dashboard', this)"><span class="icon">📊</span> Dashboard</div>
+    <div class="sidebar-item" onclick="showPage('listing', this)"><span class="icon">🎮</span> Listing Akun</div>
+    <div class="sidebar-item" onclick="showPage('transaksi', this)"><span class="icon">💳</span> Transaksi</div>
+    <div class="sidebar-item" onclick="showPage('testimoni', this)"><span class="icon">⭐</span> Testimoni</div>
+    <div class="sidebar-section" style="margin-top:16px;">Belajar</div>
+    <div class="sidebar-item" onclick="showPage('kursus', this)"><span class="icon">📚</span> Materi Kursus</div>
+    <div class="sidebar-section" style="margin-top:16px;">Akun</div>
+    <div class="sidebar-item" onclick="showPage('profil', this)"><span class="icon">👤</span> Profil Saya</div>
+  </div>
+
+  <div class="main">
+
+    <!-- DASHBOARD PAGE -->
+    <div class="page active" id="pageDashboard">
+      <div class="page-header">
+        <h1>Selamat Datang, Seller! 🛒</h1>
+        <p id="dashWelcome">Kelola listing akun game kamu dan pantau transaksi di sini.</p>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="label">Total Listing</div>
+          <div class="value" id="statListing">0</div>
+          <div class="sub">Akun aktif dijual</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Terjual</div>
+          <div class="value" id="statTerjual">0</div>
+          <div class="sub">Total akun terjual</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Pendapatan</div>
+          <div class="value" id="statPendapatan">Rp 0</div>
+          <div class="sub">Total dari penjualan</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Rating</div>
+          <div class="value" id="statRating">—</div>
+          <div class="sub" id="statRatingSub">Belum ada rating</div>
+        </div>
+      </div>
+
+      <div class="kursus-card">
+        <div>
+          <h3>📚 Baca Modul Kursus Dulu!</h3>
+          <p>Sebagai Seller baru, pastikan kamu sudah baca modul tentang <strong>Seller Amanah, Garansi, dan All Reff</strong> sebelum mulai berjualan.</p>
+        </div>
+        <a href="kursus.html" class="btn-kursus">Buka Kursus →</a>
+      </div>
+
+      <!-- Transaksi terbaru di dashboard -->
+      <div class="section-card">
+        <div class="section-card-header"><h3>💳 Transaksi Terbaru</h3></div>
+        <div id="dashTransaksi">
+          <div class="empty"><div class="icon">💳</div><p>Belum ada transaksi. Mulai berjualan dengan tambah listing!</p></div>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <div class="section-card-header"><h3>📋 Panduan Mulai Berjualan</h3></div>
+        <div style="padding:20px;">
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:#0d0f1a;border-radius:8px;">
+              <span style="font-size:1.2rem;">1️⃣</span>
+              <div><strong style="color:var(--accent2);">Tambah Listing</strong><br><span style="font-size:.83rem;color:var(--muted);">Pergi ke menu "Listing Akun" dan tambah akun game yang ingin dijual.</span></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:#0d0f1a;border-radius:8px;">
+              <span style="font-size:1.2rem;">2️⃣</span>
+              <div><strong style="color:var(--accent2);">Listing Tampil ke Member</strong><br><span style="font-size:.83rem;color:var(--muted);">Listing kamu otomatis muncul di halaman Kursus/Member untuk dilihat pembeli.</span></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:#0d0f1a;border-radius:8px;">
+              <span style="font-size:1.2rem;">3️⃣</span>
+              <div><strong style="color:var(--accent2);">Gunakan Rekber</strong><br><span style="font-size:.83rem;color:var(--muted);">Setiap transaksi wajib pakai Rekber untuk keamanan kedua pihak.</span></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:#0d0f1a;border-radius:8px;">
+              <span style="font-size:1.2rem;">4️⃣</span>
+              <div><strong style="color:var(--accent2);">Tandai Terjual</strong><br><span style="font-size:.83rem;color:var(--muted);">Setelah akun terjual, ubah status listing menjadi "Terjual" — dashboard otomatis update.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LISTING PAGE -->
+    <div class="page" id="pageListing">
+      <div class="page-header">
+        <h1>🎮 Listing Akun</h1>
+        <p>Tambah dan kelola akun game yang ingin kamu jual. Listing aktif otomatis tampil ke pembeli.</p>
+      </div>
+      <div class="section-card" style="margin-bottom:22px;">
+        <div class="section-card-header"><h3>➕ Tambah Listing Baru</h3></div>
+        <div style="padding:20px;">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nama Game</label>
+              <select id="listGame">
+                <option value="">Pilih game...</option>
+                <option>Mobile Legends</option>
+                <option>PUBG Mobile</option>
+                <option>Free Fire</option>
+                <option>Genshin Impact</option>
+                <option>Valorant</option>
+                <option>Honkai: Star Rail</option>
+                <option>Call of Duty Mobile</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Harga (Rp)</label>
+              <input type="number" id="listPrice" placeholder="contoh: 150000">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Deskripsi Akun</label>
+            <textarea id="listDesc" placeholder="Contoh: ML rank Mythic, 50+ skin epic, email bisa ganti, garansi 1x24jam..."></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Garansi</label>
+              <select id="listGaransi">
+                <option>1x24 Jam</option>
+                <option>3x24 Jam</option>
+                <option>7 Hari</option>
+                <option>Tanpa Garansi</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Status</label>
+              <select id="listStatus">
+                <option value="Dijual">Dijual</option>
+                <option value="Terjual">Terjual</option>
+                <option value="Tidak Aktif">Tidak Aktif</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-submit" onclick="addListing()">➕ Tambah Listing</button>
+        </div>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header"><h3>📋 Semua Listing Kamu</h3></div>
+        <div id="listingTable">
+          <div class="empty"><div class="icon">🎮</div><p>Belum ada listing. Tambah listing pertama kamu di atas!</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSAKSI PAGE -->
+    <div class="page" id="pageTransaksi">
+      <div class="page-header">
+        <h1>💳 Riwayat Transaksi</h1>
+        <p>Pantau semua transaksi akun yang sudah terjual.</p>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header"><h3>💳 Akun Terjual</h3></div>
+        <div id="transaksiTable">
+          <div class="empty"><div class="icon">💳</div><p>Belum ada transaksi. Tandai listing sebagai "Terjual" untuk mencatat penjualan.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TESTIMONI PAGE -->
+    <div class="page" id="pageTestimoni">
+      <div class="page-header">
+        <h1>⭐ Testimoni</h1>
+        <p>Rating dan ulasan dari pembeli kamu.</p>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header"><h3>⭐ Ulasan Pembeli</h3></div>
+        <div id="testimoniList">
+          <div class="empty"><div class="icon">⭐</div><p>Belum ada testimoni. Testimoni muncul setelah transaksi selesai.</p></div>
+        </div>
+      </div>
+      <div class="section-card" style="margin-top:16px;">
+        <div class="section-card-header"><h3>✍️ Tambah Testimoni Manual</h3></div>
+        <div style="padding:20px;">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nama Pembeli</label>
+              <input type="text" id="testiName" placeholder="Nama pembeli">
+            </div>
+            <div class="form-group">
+              <label>Rating (1–5)</label>
+              <select id="testiRating">
+                <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+                <option value="4">⭐⭐⭐⭐ (4)</option>
+                <option value="3">⭐⭐⭐ (3)</option>
+                <option value="2">⭐⭐ (2)</option>
+                <option value="1">⭐ (1)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Ulasan</label>
+            <textarea id="testiMsg" placeholder="Tulis ulasan dari pembeli..."></textarea>
+          </div>
+          <button class="btn-submit" onclick="addTestimoni()">➕ Tambah Testimoni</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KURSUS PAGE -->
+    <div class="page" id="pageKursus">
+      <div class="page-header">
+        <h1>📚 Materi Kursus</h1>
+        <p>Pelajari semua modul untuk menjadi Seller yang amanah dan terpercaya.</p>
+      </div>
+      <div class="kursus-card">
+        <div>
+          <h3>📚 Buka Halaman Kursus Lengkap</h3>
+          <p>Semua 10 modul tersedia di halaman kursus. Pelajari mulai dari cara transaksi aman, garansi, rekber, hingga cara menjadi seller amanah.</p>
+        </div>
+        <a href="kursus.html" class="btn-kursus">Buka Kursus →</a>
+      </div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;">
+        <p style="font-size:.87rem;color:var(--muted);line-height:1.8;">
+          <strong style="color:var(--accent2);">Modul penting untuk Seller:</strong><br>
+          📌 Modul 5 — Garansi dan All Reff<br>
+          📌 Modul 9 — Seller yang Amanah<br>
+          📌 Modul 6 — Cara Kerja Rekber<br>
+          📌 Modul 8 — Keamanan Data Akun<br>
+          📌 Modul 4 — Harga yang Wajar
+        </p>
+      </div>
+    </div>
+
+    <!-- PROFIL PAGE -->
+    <div class="page" id="pageProfil">
+      <div class="page-header">
+        <h1>👤 Profil Saya</h1>
+        <p>Informasi akun Seller kamu.</p>
+      </div>
+      <div class="section-card">
+        <div class="section-card-header"><h3>📋 Data Akun</h3></div>
+        <div style="padding:20px;" id="profilContent">
+          <p style="color:var(--muted);font-size:.87rem;">Memuat data profil...</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function getSession() {
+  try { return JSON.parse(localStorage.getItem('gta_session')); } catch { return null; }
+}
+
+const session = getSession();
+if (!session) {
+  window.location.href = 'index.html';
+} else if (session.role !== 'seller' && session.role !== 'admin') {
+  const dest = { member: 'kursus.html', rekber: 'dashboard-rekber.html' };
+  window.location.href = dest[session.role] || 'kursus.html';
+}
+
+if (session) {
+  document.getElementById('navName').textContent = session.name;
+  document.getElementById('dashWelcome').textContent = `Halo ${session.name}! Kelola listing akun game dan pantau transaksi kamu di sini.`;
+}
+
+function showPage(name, item) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+  document.getElementById('page' + name.charAt(0).toUpperCase() + name.slice(1)).classList.add('active');
+  item.classList.add('active');
+  if (name === 'profil') renderProfil();
+  if (name === 'transaksi') renderTransaksi();
+  if (name === 'testimoni') renderTestimoni();
+  if (name === 'dashboard') updateDashboardStats();
+}
+
+// ==================== LISTING ====================
+function getListing() {
+  try { return JSON.parse(localStorage.getItem('gta_listing_' + session?.email) || '[]'); } catch { return []; }
+}
+function saveListing(arr) {
+  localStorage.setItem('gta_listing_' + session?.email, JSON.stringify(arr));
+  // Juga simpan ke marketplace global supaya member bisa lihat
+  saveToMarketplace();
+}
+
+// Simpan listing "Dijual" ke marketplace global agar bisa dilihat semua user
+function saveToMarketplace() {
+  const all = getListing().filter(l => l.status === 'Dijual');
+  const tagged = all.map(l => ({ ...l, sellerName: session.name, sellerEmail: session.email }));
+  // Ambil listing dari seller lain, hapus listing seller ini, ganti dengan yang baru
+  let market = [];
+  try { market = JSON.parse(localStorage.getItem('gta_marketplace') || '[]'); } catch {}
+  market = market.filter(l => l.sellerEmail !== session.email);
+  market = market.concat(tagged);
+  localStorage.setItem('gta_marketplace', JSON.stringify(market));
+}
+
+function addListing() {
+  const game = document.getElementById('listGame').value;
+  const price = document.getElementById('listPrice').value;
+  const desc = document.getElementById('listDesc').value.trim();
+  const garansi = document.getElementById('listGaransi').value;
+  const status = document.getElementById('listStatus').value;
+
+  if (!game) { alert('Pilih nama game terlebih dahulu.'); return; }
+  if (!price || isNaN(price) || parseInt(price) < 1000) { alert('Masukkan harga yang valid (minimal Rp 1.000).'); return; }
+  if (!desc) { alert('Tulis deskripsi akun.'); return; }
+
+  const listings = getListing();
+  listings.push({
+    id: Date.now(), game,
+    price: parseInt(price), desc, garansi, status,
+    createdAt: new Date().toLocaleDateString('id-ID'),
+    soldAt: status === 'Terjual' ? new Date().toLocaleDateString('id-ID') : null
+  });
+  saveListing(listings);
+  renderListingTable();
+  updateDashboardStats();
+
+  document.getElementById('listGame').value = '';
+  document.getElementById('listPrice').value = '';
+  document.getElementById('listDesc').value = '';
+}
+
+function changeStatus(id, newStatus) {
+  const listings = getListing();
+  const item = listings.find(l => l.id == id);
+  if (item) {
+    item.status = newStatus;
+    if (newStatus === 'Terjual') item.soldAt = new Date().toLocaleDateString('id-ID');
+  }
+  saveListing(listings);
+  renderListingTable();
+  updateDashboardStats();
+}
+
+function deleteListing(id) {
+  if (!confirm('Hapus listing ini?')) return;
+  let listings = getListing();
+  listings = listings.filter(l => l.id != id);
+  saveListing(listings);
+  renderListingTable();
+  updateDashboardStats();
+}
+
+function renderListingTable() {
+  const listings = getListing();
+  const wrap = document.getElementById('listingTable');
+  if (!listings.length) {
+    wrap.innerHTML = '<div class="empty"><div class="icon">🎮</div><p>Belum ada listing. Tambah listing pertama kamu di atas!</p></div>';
+    return;
+  }
+  const statusClass = { 'Dijual':'badge-green', 'Terjual':'badge-blue', 'Tidak Aktif':'badge-yellow' };
+  let html = '<table><thead><tr><th>Game</th><th>Harga</th><th>Garansi</th><th>Status</th><th>Tanggal</th><th>Aksi</th></tr></thead><tbody>';
+  listings.forEach(l => {
+    html += `<tr>
+      <td>${l.game}</td>
+      <td>Rp ${l.price.toLocaleString('id-ID')}</td>
+      <td>${l.garansi}</td>
+      <td><span class="badge ${statusClass[l.status] || 'badge-yellow'}">${l.status}</span></td>
+      <td>${l.createdAt}</td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap;">
+        ${l.status === 'Dijual' ? `<button onclick="changeStatus(${l.id},'Terjual')" style="background:#0f2040;border:none;color:#60b0ff;border-radius:5px;padding:4px 10px;cursor:pointer;font-size:.75rem;">✓ Tandai Terjual</button>` : ''}
+        ${l.status === 'Terjual' ? `<button onclick="changeStatus(${l.id},'Dijual')" style="background:#1a3a2a;border:none;color:#3de88a;border-radius:5px;padding:4px 10px;cursor:pointer;font-size:.75rem;">↩ Jual Lagi</button>` : ''}
+        <button onclick="deleteListing(${l.id})" style="background:none;border:1px solid #ff5c5c44;color:#ff5c5c;border-radius:5px;padding:4px 10px;cursor:pointer;font-size:.75rem;">Hapus</button>
+      </td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+// ==================== TRANSAKSI (dari listing terjual) ====================
+function renderTransaksi() {
+  const sold = getListing().filter(l => l.status === 'Terjual');
+  const wrap = document.getElementById('transaksiTable');
+  if (!sold.length) {
+    wrap.innerHTML = '<div class="empty"><div class="icon">💳</div><p>Belum ada transaksi. Tandai listing sebagai "Terjual" untuk mencatat penjualan.</p></div>';
+    return;
+  }
+  let html = '<table><thead><tr><th>Game</th><th>Deskripsi</th><th>Harga</th><th>Garansi</th><th>Tgl Terjual</th></tr></thead><tbody>';
+  sold.forEach(l => {
+    html += `<tr>
+      <td>${l.game}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.desc}</td>
+      <td style="color:var(--success);font-weight:700;">Rp ${l.price.toLocaleString('id-ID')}</td>
+      <td>${l.garansi}</td>
+      <td>${l.soldAt || l.createdAt}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+}
+
+// ==================== TESTIMONI ====================
+function getTestimoni() {
+  try { return JSON.parse(localStorage.getItem('gta_testimoni_' + session?.email) || '[]'); } catch { return []; }
+}
+function saveTestimoni(arr) { localStorage.setItem('gta_testimoni_' + session?.email, JSON.stringify(arr)); }
+
+function addTestimoni() {
+  const name = document.getElementById('testiName').value.trim();
+  const rating = parseInt(document.getElementById('testiRating').value);
+  const msg = document.getElementById('testiMsg').value.trim();
+  if (!name) { alert('Isi nama pembeli.'); return; }
+  if (!msg) { alert('Isi ulasan.'); return; }
+  const arr = getTestimoni();
+  arr.unshift({ name, rating, msg, date: new Date().toLocaleDateString('id-ID') });
+  saveTestimoni(arr);
+  renderTestimoni();
+  updateDashboardStats();
+  document.getElementById('testiName').value = '';
+  document.getElementById('testiMsg').value = '';
+}
+
+function renderTestimoni() {
+  const arr = getTestimoni();
+  const wrap = document.getElementById('testimoniList');
+  if (!arr.length) {
+    wrap.innerHTML = '<div class="empty"><div class="icon">⭐</div><p>Belum ada testimoni.</p></div>';
+    return;
+  }
+  wrap.innerHTML = arr.map(t => `
+    <div style="padding:16px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <strong style="color:var(--text);">${t.name}</strong>
+        <span style="color:#f0c040;font-size:.85rem;">${'⭐'.repeat(t.rating)}</span>
+      </div>
+      <p style="font-size:.84rem;color:var(--muted);line-height:1.5;">${t.msg}</p>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:6px;">${t.date}</div>
+    </div>
+  `).join('');
+}
+
+// ==================== DASHBOARD STATS (REAL) ====================
+function updateDashboardStats() {
+  const listings = getListing();
+  const sold = listings.filter(l => l.status === 'Terjual');
+  const active = listings.filter(l => l.status === 'Dijual');
+  const pendapatan = sold.reduce((sum, l) => sum + l.price, 0);
+  const testimoni = getTestimoni();
+  const avgRating = testimoni.length ? (testimoni.reduce((s, t) => s + t.rating, 0) / testimoni.length).toFixed(1) : '—';
+
+  document.getElementById('statListing').textContent = active.length;
+  document.getElementById('statTerjual').textContent = sold.length;
+  document.getElementById('statPendapatan').textContent = 'Rp ' + pendapatan.toLocaleString('id-ID');
+  document.getElementById('statRating').textContent = avgRating;
+  document.getElementById('statRatingSub').textContent = testimoni.length ? `Dari ${testimoni.length} ulasan` : 'Belum ada rating';
+
+  // Transaksi terbaru di dashboard
+  const dashWrap = document.getElementById('dashTransaksi');
+  if (!sold.length) {
+    dashWrap.innerHTML = '<div class="empty"><div class="icon">💳</div><p>Belum ada transaksi. Mulai berjualan dengan tambah listing!</p></div>';
+  } else {
+    let html = '<table><thead><tr><th>Game</th><th>Harga</th><th>Tanggal Terjual</th></tr></thead><tbody>';
+    sold.slice(-5).reverse().forEach(l => {
+      html += `<tr><td>${l.game}</td><td style="color:var(--success);font-weight:700;">Rp ${l.price.toLocaleString('id-ID')}</td><td>${l.soldAt || l.createdAt}</td></tr>`;
+    });
+    html += '</tbody></table>';
+    dashWrap.innerHTML = html;
+  }
+}
+
+// ==================== PROFIL ====================
+function renderProfil() {
+  if (!session) return;
+  document.getElementById('profilContent').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div><div style="font-size:.75rem;color:var(--muted);margin-bottom:4px;">NAMA</div><div style="font-weight:700;">${session.name}</div></div>
+      <div><div style="font-size:.75rem;color:var(--muted);margin-bottom:4px;">ROLE</div><div><span class="badge badge-yellow">🛒 Seller</span></div></div>
+      <div><div style="font-size:.75rem;color:var(--muted);margin-bottom:4px;">EMAIL</div><div style="color:var(--accent2);">${session.email}</div></div>
+      <div><div style="font-size:.75rem;color:var(--muted);margin-bottom:4px;">STATUS AKUN</div><div><span class="badge badge-green">✓ Aktif</span></div></div>
+    </div>
+  `;
+}
+
+function logout() {
+  localStorage.removeItem('gta_session');
+  window.location.href = 'index.html';
+}
+
+// INIT
+renderListingTable();
+updateDashboardStats();
+</script>
+</body>
+</html>
